@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+
+    <!-- Das neueste kompilierte und minimierte CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optionales Theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <!-- Das neueste kompilierte und minimierte JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script language="javascript">
+        function openUrl(url) {
+            if (url.startsWith('www.')) url = 'http://' + url;
+            if (url) {
+                var win = window.open(url, '_blank');
+                if (win) {
+                    //Browser has allowed it to be opened
+                    win.focus();
+                } else {
+                    //Browser has blocked it
+                    alert('Please allow popups for this website');
+                }
+            }
+        }
+
+        function clearUrl() {
+            var win = window.open('/', '_self');
+        }
+    </script>
+</head>
+<body>
+<h1><%= title %></h1>
+<form action="/" method="post" id="myform">
+    <div class="form-group">
+        <input type="text" id="url" class="form-control"
+                <% if (typeof url !== "undefined") { %>
+               value="<%= url %>"
+                <% } %>
+               name="url"
+               placeholder="url"
+        />
+    </div>
+
+</form>
+<p>
+    <input type="submit" class="btn btn-primary" form="myform">
+    <button class="btn btn-primary" onclick="openUrl('<%= url %>')">Open Url</button>
+    <button class="btn btn-primary" onclick="clearUrl()">Clear Url</button>
+</p>
+<!--<input type="button" class="btn btn-primary" value="Open" onclick="open()">
+<input type="button" class="btn btn-primary" value="Clear" onclick="clear()">-->
+
+<% function printKeyValue(key, value) {
+    printKey(key);
+    printValue(value);
+} %>
+
+<% function printKey(content) { %>
+<strong>&quot;<%= content %>&quot;:</strong>
+<% } %>
+
+<% function printChar(content) { %>
+<%= content %>
+<% } %>
+
+<% function printValue(content) {
+    try {
+        content = JSON.parse(content);
+    } catch (e) {
+    }
+
+if (typeof content !== "object") {
+%>
+&quot;<%= content %>&quot;
+<% } else {
+%>
+{
+<%
+    printJson(content);
+%>
+}
+<%
+} %>
+<% } %>
+
+<% function printJson(json, tabindex) { %>
+<ul>
+    <%
+    if (json instanceof Array) {
+        printChar('[');
+        var length = json.length;
+        for (var i = 0; i < length; ++i) {
+            printChar('{');
+            printJson(json[i]);
+            printChar('}');
+            if (i < length - 1)
+                printChar(',');
+        }
+        printChar(']');
+    } else {
+
+        var keys = Object.keys(json);
+    for (var x = 0; x < keys.length; ++x) {
+    %>
+    <p>
+        <%
+            var key = keys[x];
+            printKeyValue(key, json[key]);
+            if (x < keys.length - 1)
+                printChar(',');
+        %>
+    </p>
+    <%
+    }} %>
+</ul>
+<% } %>
+<% if (typeof error !== "undefined") {
+    printChar(error)
+}
+else if (typeof result !== "undefined" && result !== null) {
+%>
+<p id="output">
+    <%
+        if (result.length != 0)
+            printJson(result)
+        else {
+            printValue('No result found!');
+        }
+    %>
+</p>
+<%
+} %>
+</body>
+</html>
