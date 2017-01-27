@@ -103,9 +103,16 @@ function parse(body, demo) {
     // console.log(body.toString());
     var json = himalaya.parse(body.toString());
     var html = getElementOfJsonList(json, 'tagName', 'html');
+
     if (!demo) {
         var dest = [];
         extractJsonLd(html, dest);
+
+        //remove cdata
+        //todo test it
+        var temp = JSON.stringify(dest);
+        dest = JSON.parse(temp.replace("<![CDATA[", "").replace("]]>", ""));
+
         return dest;
     } else {
         var jsonld =
