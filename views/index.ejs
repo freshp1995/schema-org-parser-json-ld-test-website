@@ -2,7 +2,7 @@
 <html>
 <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel="stylesheet" href="/stylesheets/style.css"/>
 
     <!-- Das neueste kompilierte und minimierte CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -45,10 +45,9 @@
                placeholder="url"
         />
     </div>
-
 </form>
 <p>
-    <input type="submit" class="btn btn-primary" form="myform">
+    <input type="submit" class="btn btn-primary" form="myform" value="Send">
     <button class="btn btn-primary" onclick="openUrl('<%= url %>')">Open Url</button>
     <button class="btn btn-primary" onclick="clearUrl()">Clear Url</button>
 </p>
@@ -66,6 +65,10 @@
 
 <% function printChar(content) { %>
 <%= content %>
+<% } %>
+
+<% function printHref(content) { %>
+<a target="_blank" href="<%= content %>">"<%= content %>"</a>
 <% } %>
 
 <% function printValue(content) {
@@ -95,15 +98,23 @@ if (typeof content !== "object") {
         printChar('[');
         var length = json.length;
         for (var i = 0; i < length; ++i) {
-            printChar('{');
-            printJson(json[i]);
-            printChar('}');
+            if (typeof json[i] == 'string') {
+                var str = json[i].toString();
+                if (str.startsWith('http') || str.startsWith('www'))
+                    printHref(str);
+                else
+                    printChar('"' + str + '"');
+            }
+            else {
+                printChar('{');
+                printJson(json[i]);
+                printChar('}');
+            }
             if (i < length - 1)
                 printChar(',');
         }
         printChar(']');
     } else {
-
         var keys = Object.keys(json);
     for (var x = 0; x < keys.length; ++x) {
     %>
@@ -119,6 +130,7 @@ if (typeof content !== "object") {
     }} %>
 </ul>
 <% } %>
+
 <% if (typeof error !== "undefined") {
     printChar(error)
 }

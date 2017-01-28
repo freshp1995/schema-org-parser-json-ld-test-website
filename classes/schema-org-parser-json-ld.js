@@ -2,6 +2,7 @@ const request = require("request");
 const himalaya = require('himalaya');
 const fs = require('fs');
 var JSON = require("JSON");
+var replaceall = require("replaceall");
 
 const schemaDotOrgLink = 'application/ld+json';
 
@@ -100,7 +101,10 @@ function extractJsonLd(json, dest) {
 }
 
 function parse(body, demo) {
-    // console.log(body.toString());
+    const replacements = ['<![CDATA[', ']]>'];
+    replacements.forEach(function (str) {
+        body = replaceall.replaceall(str, '', body);
+    });
     var json = himalaya.parse(body.toString());
     var html = getElementOfJsonList(json, 'tagName', 'html');
 
@@ -111,7 +115,7 @@ function parse(body, demo) {
         //remove cdata
         //todo test it
         var temp = JSON.stringify(dest);
-        dest = JSON.parse(temp.replace("<![CDATA[", "").replace("]]>", ""));
+        dest = JSON.parse(temp);
 
         return dest;
     } else {
@@ -156,6 +160,9 @@ function getMyBodyFromUri(url, callback, demo) {
         if (!error && response.statusCode == 200) {
             callback(parse(body, demo));
         } else {
+            if (!url.startsWith('www.') && !url.startsWith('http://') && !url.startsWith('https://')) {
+                return getMyBodyFromUri('http://www.' + url, callback, demo);
+            }
             if (url.startsWith('www.')) {
                 return getMyBodyFromUri('http://' + url, callback, demo);
             }

@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var schemaParser = require('../classes/schema-org-parser-json-ld');
+var pagename = 'Schema.org Parser';
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    res.render('index', {title: 'Parser', url: '', error: ''});
+    res.render('index', {title: pagename, url: '', error: ''});
 });
 
 router.post('/', function (req, res, next) {
@@ -13,7 +14,7 @@ router.post('/', function (req, res, next) {
     if (url) {
         schemaParser.getJsonLdOfUrl(url, function (result, error) {
             var indexResult = {
-                title: 'Parser',
+                title: pagename,
                 url: req.body.url
             };
             if (error)
